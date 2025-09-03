@@ -1,0 +1,263 @@
+<%- include('../partials/head.ejs') %>
+
+    <body class="bg-gray-50 font-inter">
+        <%- include('../partials/navbar.ejs', { isAdmin: true }) %>
+
+            <div class="min-h-screen">
+                <!-- Header -->
+                <div class="bg-white shadow-sm border-b border-gray-200">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">
+                                    <i class="fas fa-box mr-2 text-blue-600"></i>
+                                    Product Management
+                                </h1>
+                                <p class="text-sm text-gray-600 mt-1">Manage your product catalog</p>
+                            </div>
+                            <button onclick="openAddProductModal()"
+                                class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-plus mr-2"></i>Add Product
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <!-- Alerts -->
+                    <% if (typeof error !=='undefined' && error) { %>
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <%= error %>
+                        </div>
+                        <% } %>
+
+                            <% if (typeof success !=='undefined' && success) { %>
+                                <div class="alert alert-success">
+                                    <i class="fas fa-check-circle mr-2"></i>
+                                    <%= success %>
+                                </div>
+                                <% } %>
+
+                                    <!-- Products Table -->
+                                    <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                                        <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                                            <h2 class="text-lg font-semibold text-gray-800">
+                                                <i class="fas fa-list mr-2"></i>
+                                                Products (<%= products ? products.length : 0 %>)
+                                            </h2>
+                                        </div>
+
+                                        <% if (products && products.length> 0) { %>
+                                            <div class="overflow-x-auto">
+                                                <table class="min-w-full divide-y divide-gray-200">
+                                                    <thead class="bg-gray-50">
+                                                        <tr>
+                                                            <th
+                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                Product Name
+                                                            </th>
+                                                            <th
+                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                Category
+                                                            </th>
+                                                            <th
+                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                Price
+                                                            </th>
+                                                            <th
+                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                Unit
+                                                            </th>
+                                                            <th
+                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                Created
+                                                            </th>
+                                                            <th
+                                                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                                Actions
+                                                            </th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="bg-white divide-y divide-gray-200">
+                                                        <% products.forEach(product=> { %>
+                                                            <tr class="hover:bg-gray-50">
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm font-medium text-gray-900">
+                                                                        <%= product.name %>
+                                                                    </div>
+                                                                    <% if (product.description) { %>
+                                                                        <div class="text-sm text-gray-500">
+                                                                            <%= product.description.substring(0, 50) %>
+                                                                                <%= product.description.length> 50 ?
+                                                                                    '...' : '' %>
+                                                                        </div>
+                                                                        <% } %>
+                                                                </td>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm text-gray-900">
+                                                                        <%= product.category || '-' %>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm font-medium text-gray-900">
+                                                                        ₹<%= product.price.toFixed(2) %>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm text-gray-900">
+                                                                        <%= product.unit %>
+                                                                    </div>
+                                                                </td>
+                                                                <td class="px-6 py-4 whitespace-nowrap">
+                                                                    <div class="text-sm text-gray-900">
+                                                                        <%= new
+                                                                            Date(product.createdAt).toLocaleDateString()
+                                                                            %>
+                                                                    </div>
+                                                                </td>
+                                                                <td
+                                                                    class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                                    <button
+                                                                        onclick="editProduct('<%= product._id %>', '<%= product.name %>', '<%= product.description || ''%>', '<%= product.price %>', '<%= product.category || '' %>', '<%= product.unit %>')"
+                                                                        class="text-blue-600 hover:text-blue-900 mr-3">
+                                                                        <i class="fas fa-edit mr-1"></i>Edit
+                                                                    </button>
+                                                                    <form
+                                                                        action="/admin/products/<%= product._id %>/delete"
+                                                                        method="POST" class="inline"
+                                                                        onsubmit="return confirm('Are you sure you want to delete this product?')">
+                                                                        <button type="submit"
+                                                                            class="text-red-600 hover:text-red-900">
+                                                                            <i class="fas fa-trash mr-1"></i>Delete
+                                                                        </button>
+                                                                    </form>
+                                                                </td>
+                                                            </tr>
+                                                            <% }) %>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <% } else { %>
+                                                <div class="p-8 text-center text-gray-500">
+                                                    <i class="fas fa-box-open text-6xl mb-4"></i>
+                                                    <h3 class="text-lg font-medium text-gray-900 mb-2">No Products Found
+                                                    </h3>
+                                                    <p class="text-gray-600 mb-4">Start building your product catalog by
+                                                        adding your first product.</p>
+                                                    <button onclick="openAddProductModal()"
+                                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                                        <i class="fas fa-plus mr-2"></i>Add First Product
+                                                    </button>
+                                                </div>
+                                                <% } %>
+                                    </div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Product Modal -->
+            <div id="productModal" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full hidden">
+                <div class="relative top-20 mx-auto p-5 border w-full max-w-md shadow-lg rounded-md bg-white">
+                    <div class="mt-3">
+                        <h3 class="text-lg font-medium text-gray-900 mb-4" id="modalTitle">Add New Product</h3>
+
+                        <form id="productForm" method="POST">
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="name" class="block text-sm font-medium text-gray-700">Product Name
+                                        *</label>
+                                    <input type="text" id="name" name="name" required
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                </div>
+
+                                <div>
+                                    <label for="description"
+                                        class="block text-sm font-medium text-gray-700">Description</label>
+                                    <textarea id="description" name="description" rows="3"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"></textarea>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="price" class="block text-sm font-medium text-gray-700">Price (₹)
+                                            *</label>
+                                        <input type="number" id="price" name="price" step="0.01" min="0" required
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                    </div>
+
+                                    <div>
+                                        <label for="unit" class="block text-sm font-medium text-gray-700">Unit</label>
+                                        <select id="unit" name="unit"
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                            <option value="pcs">Pieces</option>
+                                            <option value="kg">Kilogram</option>
+                                            <option value="ltr">Liter</option>
+                                            <option value="box">Box</option>
+                                            <option value="bag">Bag</option>
+                                            <option value="bottle">Bottle</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label for="category"
+                                        class="block text-sm font-medium text-gray-700">Category</label>
+                                    <input type="text" id="category" name="category"
+                                        placeholder="e.g., Seeds, Fertilizers, Tools"
+                                        class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                </div>
+                            </div>
+
+                            <div class="mt-6 flex justify-end space-x-3">
+                                <button type="button" onclick="closeProductModal()"
+                                    class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-4 py-2 rounded-lg font-medium transition-colors">
+                                    Cancel
+                                </button>
+                                <button type="submit"
+                                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    <span id="submitButtonText">Add Product</span>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <script>
+                function openAddProductModal() {
+                    document.getElementById('modalTitle').textContent = 'Add New Product';
+                    document.getElementById('submitButtonText').textContent = 'Add Product';
+                    document.getElementById('productForm').action = '/admin/products';
+                    document.getElementById('productForm').reset();
+                    document.getElementById('productModal').classList.remove('hidden');
+                }
+
+                function editProduct(id, name, description, price, category, unit) {
+                    document.getElementById('modalTitle').textContent = 'Edit Product';
+                    document.getElementById('submitButtonText').textContent = 'Update Product';
+                    document.getElementById('productForm').action = `/admin/products/${id}/update`;
+
+                    document.getElementById('name').value = name;
+                    document.getElementById('description').value = description;
+                    document.getElementById('price').value = price;
+                    document.getElementById('category').value = category;
+                    document.getElementById('unit').value = unit;
+
+                    document.getElementById('productModal').classList.remove('hidden');
+                }
+
+                function closeProductModal() {
+                    document.getElementById('productModal').classList.add('hidden');
+                }
+
+                // Close modal when clicking outside
+                document.getElementById('productModal').addEventListener('click', function (e) {
+                    if (e.target === this) {
+                        closeProductModal();
+                    }
+                });
+            </script>
+    </body>
+
+    </html>

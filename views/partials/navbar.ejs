@@ -1,0 +1,100 @@
+<nav class="bg-white shadow-lg border-b border-gray-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <!-- Logo and Brand -->
+            <div class="flex items-center space-x-4">
+                <a href="/"><img src="/images/krushiyuga-logo.svg" alt="Krushiyuga Logo" class="h-16"></a>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="hidden md:block">
+                <div class="ml-10 flex items-baseline space-x-4">
+                    <% if (typeof isAdmin !=='undefined' && isAdmin) { %>
+                        <a href="/admin/dashboard"
+                            class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-tachometer-alt mr-1"></i> Dashboard
+                        </a>
+                        <a href="/admin/products"
+                            class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-box mr-1"></i> Products
+                        </a>
+                        <a href="/admin/invoices"
+                            class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-file-invoice mr-1"></i> Invoices
+                        </a>
+                        <a href="/admin/invoices/create"
+                            class="bg-green-600 text-white hover:bg-green-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                            <i class="fas fa-plus mr-1"></i> New Invoice
+                        </a>
+                        <% } else { %>
+                            <a href="/user"
+                                class="text-gray-700 hover:text-green-600 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                <i class="fas fa-home mr-1"></i> My Invoices
+                            </a>
+                            <a href="/admin"
+                                class="bg-blue-600 text-white hover:bg-blue-700 px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                <i class="fas fa-user-shield mr-1"></i> Admin Portal
+                            </a>
+                            <% } %>
+                </div>
+            </div>
+
+            <!-- Mobile menu button -->
+            <div class="md:hidden">
+                <button type="button"
+                    class="mobile-menu-button bg-gray-50 p-2 rounded-md text-gray-700 hover:text-green-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                    aria-controls="mobile-menu" aria-expanded="false">
+                    <span class="sr-only">Open main menu</span>
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile menu -->
+    <div class="md:hidden hidden" id="mobile-menu">
+        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 bg-gray-50">
+            <% if (typeof isAdmin !=='undefined' && isAdmin) { %>
+                <a href="/admin/dashboard"
+                    class="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-tachometer-alt mr-2"></i> Dashboard
+                </a>
+                <a href="/admin/products"
+                    class="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-box mr-2"></i> Products
+                </a>
+                <a href="/admin/invoices"
+                    class="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-file-invoice mr-2"></i> Invoices
+                </a>
+                <a href="/admin/invoices/create"
+                    class="bg-green-600 text-white hover:bg-green-700 block px-3 py-2 rounded-md text-base font-medium">
+                    <i class="fas fa-plus mr-2"></i> New Invoice
+                </a>
+                <% } else { %>
+                    <a href="/user"
+                        class="text-gray-700 hover:text-green-600 block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-home mr-2"></i> My Invoices
+                    </a>
+                    <a href="/admin"
+                        class="bg-blue-600 text-white hover:bg-blue-700 block px-3 py-2 rounded-md text-base font-medium">
+                        <i class="fas fa-user-shield mr-2"></i> Admin Portal
+                    </a>
+                    <% } %>
+        </div>
+    </div>
+</nav>
+
+<script>
+    // Mobile menu toggle
+    document.addEventListener('DOMContentLoaded', function () {
+        const mobileMenuButton = document.querySelector('.mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if (mobileMenuButton && mobileMenu) {
+            mobileMenuButton.addEventListener('click', function () {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+    });
+</script>

@@ -1,0 +1,300 @@
+<%- include('../partials/head.ejs') %>
+
+    <body class="bg-gray-50 font-inter">
+        <%- include('../partials/navbar.ejs', { isAdmin: false }) %>
+
+            <div class="min-h-screen">
+                <!-- Header -->
+                <div class="bg-white shadow-sm border-b border-gray-200">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">
+                                    <i class="fas fa-file-invoice mr-2 text-blue-600"></i>
+                                    Invoice Details
+                                </h1>
+                                <% if (invoice) { %>
+                                    <p class="text-sm text-gray-600 mt-1">Invoice #<%= invoice.invoiceNumber %>
+                                    </p>
+                                    <% } %>
+                            </div>
+                            <div class="flex space-x-3">
+                                <a href="/user"
+                                    class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-arrow-left mr-2"></i>Back to My Invoices
+                                </a>
+                                <% if (invoice) { %>
+                                    <button onclick="window.print()"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                        <i class="fas fa-print mr-2"></i>Print
+                                    </button>
+                                    <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <% if (typeof error !=='undefined' && error) { %>
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <%= error %>
+                        </div>
+                        <% } else if (invoice) { %>
+                            <!-- Invoice Content -->
+                            <div class="bg-white rounded-lg shadow-lg overflow-hidden print:shadow-none">
+                                <!-- Invoice Header -->
+                                <div class="px-8 py-6 bg-gray-50 border-b border-gray-200 print:bg-white">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h2 class="text-3xl font-bold text-green-600">
+                                                <i class="fas fa-seedling mr-2 print:hidden"></i>KRUSHIYUGA
+                                            </h2>
+                                            <p class="text-gray-600 mt-1">Agricultural Solutions & Services</p>
+                                            <p class="text-sm text-gray-500 mt-2">
+                                                123 Farm Street, Agriculture City, AC 12345<br>
+                                                GST: 22AAAAA0000A1Z5<br>
+                                                Phone: +91 9876543210 | Email: info@krushiyuga.com
+                                            </p>
+                                        </div>
+                                        <div class="text-right">
+                                            <h3 class="text-2xl font-bold text-gray-900">INVOICE</h3>
+                                            <p class="text-gray-600">Invoice #: <span class="font-medium">
+                                                    <%= invoice.invoiceNumber %>
+                                                </span></p>
+                                            <p class="text-gray-600">Date: <span class="font-medium">
+                                                    <%= new Date(invoice.createdAt).toLocaleDateString() %>
+                                                </span></p>
+                                            <div class="mt-2 print:hidden">
+                                                <span class="inline-flex px-3 py-1 text-sm font-semibold rounded-full 
+                                        <%= invoice.status === 'paid' ? 'bg-green-100 text-green-800' : 
+                                            invoice.status === 'sent' ? 'bg-blue-100 text-blue-800' :
+                                            invoice.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                                            'bg-red-100 text-red-800' %>">
+                                                    <%= invoice.status.charAt(0).toUpperCase() + invoice.status.slice(1)
+                                                        %>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Client Information -->
+                                <div class="px-8 py-6 border-b border-gray-200">
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-gray-800 mb-3">Bill To:</h4>
+                                            <div class="text-gray-700">
+                                                <p class="font-medium text-lg">
+                                                    <%= invoice.clientName %>
+                                                </p>
+                                                <p>
+                                                    <%= invoice.clientEmail %>
+                                                </p>
+                                                <% if (invoice.clientPhone) { %>
+                                                    <p>
+                                                        <%= invoice.clientPhone %>
+                                                    </p>
+                                                    <% } %>
+                                                        <% if (invoice.clientAddress && (invoice.clientAddress.street ||
+                                                            invoice.clientAddress.city)) { %>
+                                                            <div class="mt-2">
+                                                                <% if (invoice.clientAddress.street) { %>
+                                                                    <p>
+                                                                        <%= invoice.clientAddress.street %>
+                                                                    </p>
+                                                                    <% } %>
+                                                                        <p>
+                                                                            <%= invoice.clientAddress.city %>
+                                                                                <%= invoice.clientAddress.city &&
+                                                                                    invoice.clientAddress.state ? ', '
+                                                                                    : '' %>
+                                                                                    <%= invoice.clientAddress.state %>
+                                                                                        <%= invoice.clientAddress.pincode
+                                                                                            ? ' - ' +
+                                                                                            invoice.clientAddress.pincode
+                                                                                            : '' %>
+                                                                        </p>
+                                                            </div>
+                                                            <% } %>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h4 class="text-lg font-semibold text-gray-800 mb-3">Payment Information:
+                                            </h4>
+                                            <div class="text-gray-700">
+                                                <p>Payment due within 30 days</p>
+                                                <p>GST Rate: <%= invoice.gstRate %>%</p>
+                                                <div class="mt-3 p-3 bg-blue-50 rounded-lg print:bg-gray-100">
+                                                    <p class="text-sm font-medium text-blue-800 print:text-gray-800">
+                                                        Status: <span class="capitalize">
+                                                            <%= invoice.status %>
+                                                        </span>
+                                                    </p>
+                                                    <% if (invoice.status==='sent' ) { %>
+                                                        <p class="text-xs text-blue-600 print:text-gray-600 mt-1">
+                                                            Payment pending.
+                                                        </p>
+                                                        <% } else if (invoice.status==='paid' ) { %>
+                                                            <p class="text-xs text-green-600 print:text-gray-600 mt-1">
+                                                                Thank you! Payment received.
+                                                            </p>
+                                                            <% } %>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Invoice Items -->
+                                <div class="px-8 py-6">
+                                    <h4 class="text-lg font-semibold text-gray-800 mb-4">Items:</h4>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full">
+                                            <thead>
+                                                <tr class="border-b border-gray-200">
+                                                    <th class="text-left py-3 px-4 font-medium text-gray-700">Item</th>
+                                                    <th class="text-right py-3 px-4 font-medium text-gray-700">Qty</th>
+                                                    <th class="text-right py-3 px-4 font-medium text-gray-700">Rate</th>
+                                                    <th class="text-right py-3 px-4 font-medium text-gray-700">Amount
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% invoice.items.forEach(item=> { %>
+                                                    <tr class="border-b border-gray-100">
+                                                        <td class="py-3 px-4">
+                                                            <div class="font-medium text-gray-900">
+                                                                <%= item.product.name %>
+                                                            </div>
+                                                            <% if (item.product.description) { %>
+                                                                <div class="text-sm text-gray-500">
+                                                                    <%= item.product.description %>
+                                                                </div>
+                                                                <% } %>
+                                                        </td>
+                                                        <td class="text-right py-3 px-4 text-gray-700">
+                                                            <%= item.quantity %>
+                                                        </td>
+                                                        <td class="text-right py-3 px-4 text-gray-700">₹<%=
+                                                                item.unitPrice.toFixed(2) %>
+                                                        </td>
+                                                        <td class="text-right py-3 px-4 font-medium text-gray-900">₹<%=
+                                                                item.totalPrice.toFixed(2) %>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <!-- Totals -->
+                                    <div class="mt-6 flex justify-end">
+                                        <div class="w-64">
+                                            <div class="flex justify-between py-2 text-gray-700">
+                                                <span>Subtotal:</span>
+                                                <span>₹<%= invoice.subtotal.toFixed(2) %></span>
+                                            </div>
+                                            <div class="flex justify-between py-2 text-gray-700">
+                                                <span>GST (<%= invoice.gstRate %>%):</span>
+                                                <span>₹<%= invoice.gstAmount.toFixed(2) %></span>
+                                            </div>
+                                            <hr class="my-2">
+                                            <div class="flex justify-between py-2 text-lg font-bold text-gray-900">
+                                                <span>Total:</span>
+                                                <span>₹<%= invoice.totalAmount.toFixed(2) %></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Notes -->
+                                    <% if (invoice.notes) { %>
+                                        <div class="mt-8 p-4 bg-gray-50 rounded-lg print:bg-gray-100">
+                                            <h5 class="font-medium text-gray-800 mb-2">Notes:</h5>
+                                            <p class="text-gray-700">
+                                                <%= invoice.notes %>
+                                            </p>
+                                        </div>
+                                        <% } %>
+                                </div>
+
+                                <!-- Footer -->
+                                <div class="px-8 py-6 bg-gray-50 border-t border-gray-200 print:bg-white">
+                                    <div class="text-center text-sm text-gray-600">
+                                        <p class="font-medium">Thank you for your business!</p>
+                                        <p class="mt-1">Terms: Payment due within 30 days</p>
+                                        <p class="mt-2 print:hidden">
+                                            For any queries, contact us at:
+                                            <a href="mailto:info@krushiyuga.com"
+                                                class="text-blue-600 hover:text-blue-800">info@krushiyuga.com</a> |
+                                            <a href="tel:+919876543210" class="text-blue-600 hover:text-blue-800">+91
+                                                9876543210</a>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Reminder (Only for unpaid invoices) -->
+                            <% if (invoice.status==='sent' ) { %>
+                                <div class="mt-6 bg-yellow-50 border border-yellow-200 rounded-lg p-6 print:hidden">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0">
+                                            <i class="fas fa-exclamation-triangle text-yellow-400 text-xl"></i>
+                                        </div>
+                                        <div class="ml-3">
+                                            <h3 class="text-sm font-medium text-yellow-800">Payment Reminder</h3>
+                                            <div class="mt-2 text-sm text-yellow-700">
+                                                <p>Please make the payment for this invoice to avoid any late fees.</p>
+                                            </div>
+                                            <div class="mt-4">
+                                                <div class="flex space-x-3">
+                                                    <a href="mailto:info@krushiyuga.com?subject=Payment Query - Invoice <%= invoice.invoiceNumber %>"
+                                                        class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-2 rounded-md text-sm font-medium transition-colors">
+                                                        Contact for Payment
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                                    <% } %>
+                </div>
+            </div>
+
+            <style>
+                @media print {
+                    body {
+                        background: white;
+                        font-size: 12px;
+                    }
+
+                    .print\:hidden {
+                        display: none !important;
+                    }
+
+                    .print\:shadow-none {
+                        box-shadow: none !important;
+                    }
+
+                    .print\:bg-white {
+                        background-color: white !important;
+                    }
+
+                    .print\:bg-gray-100 {
+                        background-color: #f3f4f6 !important;
+                    }
+
+                    .print\:text-gray-800 {
+                        color: #1f2937 !important;
+                    }
+
+                    .print\:text-gray-600 {
+                        color: #4b5563 !important;
+                    }
+                }
+            </style>
+    </body>
+
+    </html>

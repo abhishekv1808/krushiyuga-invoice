@@ -1,0 +1,320 @@
+<%- include('../partials/head.ejs') %>
+
+    <body class="bg-gray-50 font-inter">
+        <%- include('../partials/navbar.ejs', { isAdmin: true }) %>
+
+            <div class="min-h-screen">
+                <!-- Header -->
+                <div class="bg-white shadow-sm border-b border-gray-200">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">
+                                    <i class="fas fa-tachometer-alt mr-2 text-blue-600"></i>
+                                    Admin Dashboard
+                                </h1>
+                                <p class="text-sm text-gray-600 mt-1">Welcome to Krushiyuga Invoice Management System
+                                </p>
+                            </div>
+                            <div class="flex space-x-3">
+                                <a href="/admin/invoices/create"
+                                    class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-plus mr-2"></i>New Invoice
+                                </a>
+                                <a href="/admin/products"
+                                    class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                    <i class="fas fa-box mr-2"></i>Manage Products
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+
+                <!-- Main Content -->
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <!-- Alerts -->
+                    <% if (typeof error !=='undefined' && error) { %>
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <%= error %>
+                        </div>
+                        <% } %>
+
+                            <!-- Stats Cards -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                                <!-- Total Products -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div
+                                                class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-box text-blue-600 text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h3 class="text-sm font-medium text-gray-500">Total Products</h3>
+                                            <p class="text-2xl font-bold text-gray-900">
+                                                <%= productsCount || 0 %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Total Invoices -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div
+                                                class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-file-invoice text-green-600 text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h3 class="text-sm font-medium text-gray-500">Total Invoices</h3>
+                                            <p class="text-2xl font-bold text-gray-900">
+                                                <%= invoicesCount || 0 %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Total Revenue -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div
+                                                class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-rupee-sign text-yellow-600 text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h3 class="text-sm font-medium text-gray-500">Total Revenue</h3>
+                                            <p class="text-2xl font-bold text-gray-900">₹<%= (totalRevenue ||
+                                                    0).toFixed(2) %>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Quick Actions -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
+                                            <div
+                                                class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                                                <i class="fas fa-rocket text-purple-600 text-xl"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h3 class="text-sm font-medium text-gray-500">Quick Actions</h3>
+                                            <div class="flex space-x-2 mt-2">
+                                                <a href="/admin/invoices/create"
+                                                    class="text-xs bg-green-100 text-green-800 px-2 py-1 rounded-md hover:bg-green-200 transition-colors">
+                                                    New Invoice
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Recent Invoices -->
+                            <div class="bg-white rounded-lg shadow-lg overflow-hidden">
+                                <div class="px-6 py-4 bg-gray-50 border-b border-gray-200">
+                                    <div class="flex items-center justify-between">
+                                        <h2 class="text-lg font-semibold text-gray-800">
+                                            <i class="fas fa-clock mr-2"></i>Recent Invoices
+                                        </h2>
+                                        <a href="/admin/invoices"
+                                            class="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                            View All <i class="fas fa-arrow-right ml-1"></i>
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <% if (recentInvoices && recentInvoices.length> 0) { %>
+                                    <div class="overflow-x-auto">
+                                        <table class="min-w-full divide-y divide-gray-200">
+                                            <thead class="bg-gray-50">
+                                                <tr>
+                                                    <th
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Invoice #
+                                                    </th>
+                                                    <th
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Client
+                                                    </th>
+                                                    <th
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Amount
+                                                    </th>
+                                                    <th
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Status
+                                                    </th>
+                                                    <th
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Date
+                                                    </th>
+                                                    <th
+                                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                                        Actions
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="bg-white divide-y divide-gray-200">
+                                                <% recentInvoices.forEach(invoice=> { %>
+                                                    <tr class="hover:bg-gray-50">
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="text-sm font-medium text-gray-900">
+                                                                <%= invoice.invoiceNumber %>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="text-sm text-gray-900">
+                                                                <%= invoice.clientName %>
+                                                            </div>
+                                                            <div class="text-sm text-gray-500">
+                                                                <%= invoice.clientEmail %>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="text-sm font-medium text-gray-900">
+                                                                ₹<%= invoice.totalAmount.toFixed(2) %>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full 
+                                                <%= invoice.status === 'paid' ? 'bg-green-100 text-green-800' : 
+                                                    invoice.status === 'sent' ? 'bg-blue-100 text-blue-800' :
+                                                    invoice.status === 'draft' ? 'bg-yellow-100 text-yellow-800' :
+                                                    'bg-red-100 text-red-800' %>">
+                                                                <%= invoice.status.charAt(0).toUpperCase() +
+                                                                    invoice.status.slice(1) %>
+                                                            </span>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap">
+                                                            <div class="text-sm text-gray-900">
+                                                                <%= new Date(invoice.createdAt).toLocaleDateString() %>
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                            <a href="/admin/invoices/<%= invoice._id %>"
+                                                                class="text-blue-600 hover:text-blue-900 mr-3">
+                                                                <i class="fas fa-eye mr-1"></i>View
+                                                            </a>
+                                                            <a href="/admin/invoices/<%= invoice._id %>/pdf"
+                                                                class="text-green-600 hover:text-green-900">
+                                                                <i class="fas fa-download mr-1"></i>PDF
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    <% }) %>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <% } else { %>
+                                        <div class="p-8 text-center text-gray-500">
+                                            <i class="fas fa-inbox text-4xl mb-4"></i>
+                                            <p>No invoices created yet. <a href="/admin/invoices/create"
+                                                    class="text-blue-600 hover:text-blue-800">Create your first
+                                                    invoice</a></p>
+                                        </div>
+                                        <% } %>
+                            </div>
+
+                            <!-- Quick Stats -->
+                            <div class="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+                                <!-- Invoice Status Distribution -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                                        <i class="fas fa-chart-pie mr-2"></i>Invoice Status Overview
+                                    </h3>
+                                    <% if (recentInvoices && recentInvoices.length> 0) { %>
+                                        <% const statusCounts={ draft: recentInvoices.filter(inv=> inv.status ===
+                                            'draft').length,
+                                            sent: recentInvoices.filter(inv => inv.status === 'sent').length,
+                                            paid: recentInvoices.filter(inv => inv.status === 'paid').length,
+                                            cancelled: recentInvoices.filter(inv => inv.status === 'cancelled').length
+                                            };
+                                            %>
+                                            <div class="space-y-3">
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm text-gray-600">Draft</span>
+                                                    <span class="text-sm font-medium text-yellow-600">
+                                                        <%= statusCounts.draft %>
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm text-gray-600">Sent</span>
+                                                    <span class="text-sm font-medium text-blue-600">
+                                                        <%= statusCounts.sent %>
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm text-gray-600">Paid</span>
+                                                    <span class="text-sm font-medium text-green-600">
+                                                        <%= statusCounts.paid %>
+                                                    </span>
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <span class="text-sm text-gray-600">Cancelled</span>
+                                                    <span class="text-sm font-medium text-red-600">
+                                                        <%= statusCounts.cancelled %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <% } else { %>
+                                                <p class="text-gray-500 text-sm">No data available</p>
+                                                <% } %>
+                                </div>
+
+                                <!-- Recent Activity -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <h3 class="text-lg font-semibold text-gray-800 mb-4">
+                                        <i class="fas fa-activity mr-2"></i>System Information
+                                    </h3>
+                                    <div class="space-y-3">
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-600">Server Status</span>
+                                            <span class="text-sm font-medium text-green-600">
+                                                <i class="fas fa-circle text-xs mr-1"></i>Online
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-600">Database</span>
+                                            <span class="text-sm font-medium text-green-600">
+                                                <i class="fas fa-circle text-xs mr-1"></i>Connected
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-600">Last Backup</span>
+                                            <span class="text-sm font-medium text-gray-600">
+                                                <%= new Date().toLocaleDateString() %>
+                                            </span>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-sm text-gray-600">Version</span>
+                                            <span class="text-sm font-medium text-gray-600">v1.0.0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                </div>
+            </div>
+
+            <!-- Footer -->
+            <footer class="bg-gray-800 text-white py-6 mt-12">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <div class="text-gray-400 text-sm">
+                        &copy; <%= new Date().getFullYear() %> Krushiyuga Invoice Management System. All rights
+                            reserved.
+                    </div>
+                </div>
+            </footer>
+    </body>
+
+    </html>

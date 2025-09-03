@@ -1,0 +1,329 @@
+<%- include('../partials/head.ejs') %>
+
+    <body class="bg-gray-50 font-inter">
+        <%- include('../partials/navbar.ejs', { isAdmin: true }) %>
+
+            <div class="min-h-screen">
+                <!-- Header -->
+                <div class="bg-white shadow-sm border-b border-gray-200">
+                    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <h1 class="text-2xl font-bold text-gray-900">
+                                    <i class="fas fa-plus-circle mr-2 text-green-600"></i>
+                                    Create New Invoice
+                                </h1>
+                                <p class="text-sm text-gray-600 mt-1">Generate a new invoice for your client</p>
+                            </div>
+                            <a href="/admin/invoices"
+                                class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                <i class="fas fa-arrow-left mr-2"></i>Back to Invoices
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Content -->
+                <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    <!-- Alerts -->
+                    <% if (typeof error !=='undefined' && error) { %>
+                        <div class="alert alert-error">
+                            <i class="fas fa-exclamation-circle mr-2"></i>
+                            <%= error %>
+                        </div>
+                        <% } %>
+
+                            <form action="/admin/invoices" method="POST" class="space-y-8">
+                                <!-- Client Information -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <h2 class="text-lg font-semibold text-gray-800 mb-4">
+                                        <i class="fas fa-user mr-2"></i>Client Information
+                                    </h2>
+
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                        <div>
+                                            <label for="clientName"
+                                                class="block text-sm font-medium text-gray-700">Client Name *</label>
+                                            <input type="text" id="clientName" name="clientName" required
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                        </div>
+
+                                        <div>
+                                            <label for="clientEmail"
+                                                class="block text-sm font-medium text-gray-700">Email Address *</label>
+                                            <input type="email" id="clientEmail" name="clientEmail" required
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                        </div>
+
+                                        <div>
+                                            <label for="clientPhone"
+                                                class="block text-sm font-medium text-gray-700">Phone Number</label>
+                                            <input type="tel" id="clientPhone" name="clientPhone"
+                                                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                        </div>
+                                    </div>
+
+                                    <!-- Address -->
+                                    <div class="mt-6">
+                                        <h3 class="text-md font-medium text-gray-700 mb-3">Billing Address</h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div class="md:col-span-2">
+                                                <label for="clientStreet"
+                                                    class="block text-sm font-medium text-gray-700">Street
+                                                    Address</label>
+                                                <input type="text" id="clientStreet" name="clientStreet"
+                                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                            </div>
+                                            <div>
+                                                <label for="clientCity"
+                                                    class="block text-sm font-medium text-gray-700">City</label>
+                                                <input type="text" id="clientCity" name="clientCity"
+                                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                            </div>
+                                            <div>
+                                                <label for="clientState"
+                                                    class="block text-sm font-medium text-gray-700">State</label>
+                                                <input type="text" id="clientState" name="clientState"
+                                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                            </div>
+                                            <div>
+                                                <label for="clientPincode"
+                                                    class="block text-sm font-medium text-gray-700">Pincode</label>
+                                                <input type="text" id="clientPincode" name="clientPincode"
+                                                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Invoice Items -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <h2 class="text-lg font-semibold text-gray-800">
+                                            <i class="fas fa-list mr-2"></i>Invoice Items
+                                        </h2>
+                                        <button type="button" onclick="addItem()"
+                                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-medium transition-colors">
+                                            <i class="fas fa-plus mr-2"></i>Add Item
+                                        </button>
+                                    </div>
+
+                                    <div id="itemsContainer">
+                                        <!-- Items will be added here dynamically -->
+                                    </div>
+
+                                    <div class="mt-6 text-right">
+                                        <div class="inline-block bg-gray-50 p-4 rounded-lg">
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="text-sm text-gray-600">Subtotal:</span>
+                                                <span id="subtotal" class="font-medium">₹0.00</span>
+                                            </div>
+                                            <div class="flex justify-between items-center mb-2">
+                                                <label for="gstRate" class="text-sm text-gray-600">GST Rate (%):</label>
+                                                <select id="gstRate" name="gstRate" onchange="calculateTotals()"
+                                                    class="ml-2 px-2 py-1 border border-gray-300 rounded text-sm">
+                                                    <option value="0">0%</option>
+                                                    <option value="5">5%</option>
+                                                    <option value="12">12%</option>
+                                                    <option value="18" selected>18%</option>
+                                                    <option value="28">28%</option>
+                                                </select>
+                                            </div>
+                                            <div class="flex justify-between items-center mb-2">
+                                                <span class="text-sm text-gray-600">GST Amount:</span>
+                                                <span id="gstAmount" class="font-medium">₹0.00</span>
+                                            </div>
+                                            <hr class="my-2">
+                                            <div class="flex justify-between items-center">
+                                                <span class="text-lg font-semibold">Total:</span>
+                                                <span id="totalAmount"
+                                                    class="text-lg font-bold text-green-600">₹0.00</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Additional Information -->
+                                <div class="bg-white rounded-lg shadow-lg p-6">
+                                    <h2 class="text-lg font-semibold text-gray-800 mb-4">
+                                        <i class="fas fa-sticky-note mr-2"></i>Additional Information
+                                    </h2>
+
+                                    <div>
+                                        <label for="notes" class="block text-sm font-medium text-gray-700">Notes</label>
+                                        <textarea id="notes" name="notes" rows="3"
+                                            placeholder="Any additional notes or terms..."
+                                            class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500"></textarea>
+                                    </div>
+                                </div>
+
+                                <!-- Submit Button -->
+                                <div class="flex justify-end space-x-4">
+                                    <a href="/admin/invoices"
+                                        class="bg-gray-300 hover:bg-gray-400 text-gray-800 px-6 py-3 rounded-lg font-medium transition-colors">
+                                        Cancel
+                                    </a>
+                                    <button type="submit"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-medium transition-colors">
+                                        <i class="fas fa-save mr-2"></i>Create Invoice
+                                    </button>
+                                </div>
+                </div>
+                </form>
+            </div>
+            </div>
+
+            <!-- Products data injection -->
+            <script>
+                let itemIndex = 0;
+                let products = [];
+
+                // Fetch products from API
+                async function loadProducts() {
+                    try {
+                        const response = await fetch('/admin/api/products');
+                        if (response.ok) {
+                            const data = await response.json();
+                            products = data.products || [];
+                            console.log('Products loaded via API:', products.length);
+                        } else {
+                            console.error('Failed to load products');
+                            products = [];
+                        }
+                    } catch (error) {
+                        console.error('Error loading products:', error);
+                        products = [];
+                    }
+                }
+
+                async function addItem() {
+                    // Ensure products are loaded
+                    if (products.length === 0) {
+                        await loadProducts();
+                    }
+
+                    const container = document.getElementById('itemsContainer');
+                    if (!container) {
+                        console.error('Items container not found!');
+                        return;
+                    }
+
+                    const itemDiv = document.createElement('div');
+                    itemDiv.className = 'border border-gray-200 rounded-lg p-4 mb-4';
+                    itemDiv.id = 'item-' + itemIndex;
+
+                    // Build product options
+                    let productOptions = '<option value="">Select a product...</option>';
+                    if (products && products.length > 0) {
+                        console.log('Building options for', products.length, 'products');
+                        for (let i = 0; i < products.length; i++) {
+                            const product = products[i];
+                            productOptions += '<option value="' + product._id + '" data-price="' + product.price + '">' +
+                                product.name + ' - ₹' + product.price + '</option>';
+                        }
+                    } else {
+                        console.warn('No products available for dropdown');
+                        productOptions += '<option value="" disabled>No products available</option>';
+                    }
+
+                    itemDiv.innerHTML =
+                        '<div class="flex items-center justify-between mb-3">' +
+                        '<h3 class="text-md font-medium text-gray-700">Item ' + (itemIndex + 1) + '</h3>' +
+                        '<button type="button" onclick="removeItem(' + itemIndex + ')" class="text-red-600 hover:text-red-800">' +
+                        '<i class="fas fa-trash"></i>' +
+                        '</button>' +
+                        '</div>' +
+
+                        '<div class="grid grid-cols-1 md:grid-cols-4 gap-4">' +
+                        '<div class="md:col-span-2">' +
+                        '<label class="block text-sm font-medium text-gray-700">Product</label>' +
+                        '<select name="items[' + itemIndex + '][productId]" onchange="updatePrice(' + itemIndex + ')" required ' +
+                        'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">' +
+                        productOptions +
+                        '</select>' +
+                        '</div>' +
+
+                        '<div>' +
+                        '<label class="block text-sm font-medium text-gray-700">Quantity</label>' +
+                        '<input type="number" name="items[' + itemIndex + '][quantity]" min="1" value="1" ' +
+                        'onchange="calculateItemTotal(' + itemIndex + ')" required ' +
+                        'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500">' +
+                        '</div>' +
+
+                        '<div>' +
+                        '<label class="block text-sm font-medium text-gray-700">Unit Price</label>' +
+                        '<input type="number" step="0.01" id="price-' + itemIndex + '" readonly ' +
+                        'class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm bg-gray-50">' +
+                        '</div>' +
+                        '</div>' +
+
+                        '<div class="mt-3 text-right">' +
+                        '<span class="text-sm text-gray-600">Item Total: </span>' +
+                        '<span id="itemTotal-' + itemIndex + '" class="font-medium">₹0.00</span>' +
+                        '</div>';
+
+                    container.appendChild(itemDiv);
+                    itemIndex++;
+                    console.log('Item added, total items:', itemIndex);
+                } function removeItem(index) {
+                    const item = document.getElementById('item-' + index);
+                    if (item) {
+                        item.remove();
+                        calculateTotals();
+                    }
+                }
+
+                function updatePrice(index) {
+                    const select = document.querySelector('select[name="items[' + index + '][productId]"]');
+                    const priceInput = document.getElementById('price-' + index);
+                    const selectedOption = select.options[select.selectedIndex];
+
+                    if (selectedOption && selectedOption.dataset.price) {
+                        priceInput.value = selectedOption.dataset.price;
+                        calculateItemTotal(index);
+                    } else {
+                        priceInput.value = '';
+                        document.getElementById('itemTotal-' + index).textContent = '₹0.00';
+                        calculateTotals();
+                    }
+                }
+
+                function calculateItemTotal(index) {
+                    const quantity = document.querySelector('input[name="items[' + index + '][quantity]"]').value;
+                    const price = document.getElementById('price-' + index).value;
+                    const total = quantity * price;
+
+                    document.getElementById('itemTotal-' + index).textContent = '₹' + total.toFixed(2);
+                    calculateTotals();
+                }
+
+                function calculateTotals() {
+                    let subtotal = 0;
+
+                    // Calculate subtotal from all items
+                    for (let i = 0; i < itemIndex; i++) {
+                        const itemTotalElement = document.getElementById('itemTotal-' + i);
+                        if (itemTotalElement) {
+                            const itemTotal = parseFloat(itemTotalElement.textContent.replace('₹', '')) || 0;
+                            subtotal += itemTotal;
+                        }
+                    }
+
+                    const gstRate = parseFloat(document.getElementById('gstRate').value) || 0;
+                    const gstAmount = (subtotal * gstRate) / 100;
+                    const totalAmount = subtotal + gstAmount;
+
+                    document.getElementById('subtotal').textContent = '₹' + subtotal.toFixed(2);
+                    document.getElementById('gstAmount').textContent = '₹' + gstAmount.toFixed(2);
+                    document.getElementById('totalAmount').textContent = '₹' + totalAmount.toFixed(2);
+                }
+
+                // Initialize page
+                document.addEventListener('DOMContentLoaded', async function () {
+                    await loadProducts();
+                    addItem();
+                });
+            </script>
+    </body>
+
+    </html>
