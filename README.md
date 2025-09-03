@@ -15,7 +15,7 @@ A comprehensive Invoice Management System built for agricultural businesses usin
 - **Invoice Search**: Users can search invoices by email
 - **Invoice Viewing**: Detailed view of assigned invoices
 - **Print Functionality**: Print invoices directly from browser
-- **Status Tracking**: View payment status and due dates
+- **Status Tracking**: View payment status and invoice details
 
 ## 🛠️ Tech Stack
 
